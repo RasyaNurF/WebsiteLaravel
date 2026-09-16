@@ -16,11 +16,11 @@
     --color-navy-900: #082240;
     --color-navy-950: #051829;
 
-    --color-brand-100: #fef3c7;
-    --color-brand-400: #fbbf24;
-    --color-brand-500: #f0a000;
-    --color-brand-600: #c77f00;
-    --color-brand-700: #9a6200;
+    --color-brand-100: #dbeafe;
+    --color-brand-400: #60a5fa;
+    --color-brand-500: #3b82f6;
+    --color-brand-600: #2563eb;
+    --color-brand-700: #1d4ed8;
 }
 
 html {
@@ -66,6 +66,39 @@ body {
     animation-play-state: paused;
 }
 
+/* Marquee portofolio: baris atas ke kiri, baris bawah ke kanan.
+   Konten diduplikasi dua kali identik, jadi geser -50% menyatu mulus. */
+@keyframes marquee-left {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(-50%);
+    }
+}
+
+@keyframes marquee-right {
+    from {
+        transform: translateX(-50%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+.animate-marquee-left {
+    animation: marquee-left 55s linear infinite;
+}
+
+.animate-marquee-right {
+    animation: marquee-right 55s linear infinite;
+}
+
+.animate-marquee-left:hover,
+.animate-marquee-right:hover {
+    animation-play-state: paused;
+}
+
 @media (prefers-reduced-motion: reduce) {
     .reveal {
         opacity: 1;
@@ -73,6 +106,10 @@ body {
         transition: none;
     }
     .animate-marquee {
+        animation: none;
+    }
+    .animate-marquee-left,
+    .animate-marquee-right {
         animation: none;
     }
 

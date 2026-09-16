@@ -17,15 +17,20 @@ if (toggle && drawer) {
     });
 }
 
-const header = document.getElementById('site-header');
+// Navbar kaca: transparan di atas lalu berkaca gelap setelah menggulir (hanya
+// beranda; halaman lain selalu berkaca dari server dan tidak diubah di sini).
+const glassHeader = document.getElementById('glass-header');
 
-if (header) {
-    const onScroll = () => {
-        header.classList.toggle('shadow-sm', window.scrollY > 8);
+if (glassHeader && glassHeader.hasAttribute('data-transparent-top')) {
+    const glassClasses = ['bg-navy-950/80', 'backdrop-blur', 'shadow-sm', 'border-b', 'border-white/10'];
+
+    const onGlassScroll = () => {
+        const scrolled = window.scrollY > 24;
+        glassClasses.forEach((cls) => glassHeader.classList.toggle(cls, scrolled));
     };
 
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
+    window.addEventListener('scroll', onGlassScroll, { passive: true });
+    onGlassScroll();
 }
 
 // --- Chat admin (halaman kontak) ---
@@ -147,7 +152,7 @@ document.querySelectorAll('[data-pw-toggle]').forEach((button) => {
 
 // Reveal on scroll: blok section muncul halus, item daftar menyusul berurutan.
 const listItems = document.querySelectorAll(
-    '#layanan .divide-y > a, #proses ol > li, #portofolio article, #insight .divide-y > a'
+    '#layanan [data-service-item], #proses ol > li, #insight .divide-y > a'
 );
 
 listItems.forEach((el) => {
@@ -155,7 +160,9 @@ listItems.forEach((el) => {
     el.style.transitionDelay = `${(siblings.indexOf(el) % 4) * 80}ms`;
 });
 
-const revealTargets = document.querySelectorAll('main section > div:not([data-no-reveal]), #portofolio article');
+const revealTargets = document.querySelectorAll(
+    'main section > div:not([data-no-reveal]), #layanan [data-service-item], #solusi .divide-y > div'
+);
 
 if ('IntersectionObserver' in window && revealTargets.length > 0) {
     const io = new IntersectionObserver(
