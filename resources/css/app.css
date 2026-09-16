@@ -4,6 +4,79 @@
 @source '../../storage/framework/views/*.php';
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
+
+    --color-navy-50: #eef4fa;
+    --color-navy-100: #d9e7f4;
+    --color-navy-200: #b3cfe8;
+    --color-navy-600: #154a80;
+    --color-navy-700: #0f3a68;
+    --color-navy-800: #0b2c52;
+    --color-navy-900: #082240;
+    --color-navy-950: #051829;
+
+    --color-brand-100: #fef3c7;
+    --color-brand-400: #fbbf24;
+    --color-brand-500: #f0a000;
+    --color-brand-600: #c77f00;
+    --color-brand-700: #9a6200;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    @apply bg-white font-sans text-neutral-700 antialiased;
+}
+
+::selection {
+    background: var(--color-brand-400);
+    color: var(--color-navy-950);
+}
+
+/* Reveal on scroll (kelas .reveal ditambahkan via JS agar tetap terlihat tanpa JS) */
+.reveal {
+    opacity: 0;
+    transform: translateY(26px);
+    transition:
+        opacity 0.7s ease,
+        transform 0.7s cubic-bezier(0.22, 0.61, 0.36, 1);
+    will-change: opacity, transform;
+}
+
+.reveal.is-visible {
+    opacity: 1;
+    transform: none;
+}
+
+/* Marquee logo klien */
+@keyframes marquee {
+    to {
+        transform: translateX(-50%);
+    }
+}
+
+.animate-marquee {
+    animation: marquee 32s linear infinite;
+}
+
+.animate-marquee:hover {
+    animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .reveal {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+    .animate-marquee {
+        animation: none;
+    }
+
+    html {
+        scroll-behavior: auto;
+    }
 }

@@ -1,47 +1,27 @@
-<laravel-boost-guidelines>
-# Laravel Application
+# AGENTS.md
 
-This repository contains a Laravel application. Complete the following setup before working on the user's request.
+## Stack
+- Laravel 13.32 (PHP ^8.3), Tailwind CSS v4 via `@tailwindcss/vite` (no `tailwind.config.js`), Vite 8, PHPUnit 12.
+- No API routes. Session web app only. UI copy is Indonesian (routes/views in Indonesian, e.g. `/lupa-kata-sandi`).
+- `CLAUDE.md` holds full Laravel Boost guidelines (PHP/artisan/pint/phpunit conventions); read it for backend work.
+- Confirm version-sensitive APIs first: `composer show --direct` (PHP), `package.json` (JS).
 
-## Prerequisites
+## Architecture
+- `routes/web.php`: `/` welcome, `/kontak` chat (`ChatController`, `throttle:10,1`), auth group (`guest`) for login/register/password-reset, `auth` group for `/dashboard` + logout. Throttled POSTs at `throttle:5,1`.
+- Controllers in `app/Http/Controllers/`: `LoginController`, `RegisterController`, `PasswordResetController`, `ChatController` — hand-rolled, no Breeze/Jetstream/Fortify.
+- Models: `User`, `ChatMessage`. Views: `resources/views/{auth,layouts}/*.blade.php`; shared layout `layouts/site.blade.php`.
 
-Verify that PHP and Composer are available:
+## Commands
+- First-time setup: `composer run setup` (install, `.env`, key, migrate, npm build). Requires `database/database.sqlite` to exist for sqlite.
+- Dev server: `composer run dev` (app + queue + logs). Frontend only: `npm run dev` / `npm run build`.
+- Tests: `composer run test` (full suite, clears config first). Focused: `php artisan test --compact <path>` or `--filter=Name`.
+- Scaffold with `php artisan make:* --no-interaction`; tests via `php artisan make:test --phpunit {Name}` (no suite prefix, e.g. `ExampleTest` not `Feature/ExampleTest`).
 
-```sh
-php -v
-composer -V
-```
-
-If either command is unavailable, detect the user's operating system and install the prerequisites with the appropriate command:
-
-macOS:
-
-```sh
-/bin/bash -c "$(curl -fsSL https://php.new/install/mac/8.5)"
-```
-
-Windows PowerShell:
-
-```powershell
-Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://php.new/install/windows/8.5'))
-```
-
-Linux:
-
-```sh
-/bin/bash -c "$(curl -fsSL https://php.new/install/linux/8.5)"
-```
-
-After installation, ask the user to restart their terminal. If the agent needs the restarted shell to continue, ask the user to reopen their terminal and rerun their original prompt.
-
-## Agent Setup
-
-Install Laravel Boost from the application root before making application changes:
-
-```sh
-composer require laravel/boost --dev
-php artisan boost:install
-```
-
-Boost replaces these bootstrap instructions with guidelines tailored to the application. After installation, read `AGENTS.md` again and continue with the user's original request using the generated guidelines.
-</laravel-boost-guidelines>
+## Gotchas
+- DB is sqlite locally; `phpunit.xml` forces sqlite `:memory:` for tests — no external DB needed. Don't assume MySQL even on Laragon.
+- Frontend entries are `resources/css/app.css` + `resources/js/app.js`. Invisible UI change or Vite manifest error → `npm run build`.
+- After touching PHP files: `vendor/bin/pint --dirty --format agent`.
+- Shell here is Windows PowerShell 5.1: chain with `; if ($?) { ... }`, quote spaced paths; tinker uses single quotes outside, double inside: `php artisan tinker --execute 'User::where("active", true)->count();'`.
+- Boost MCP (`php artisan boost:mcp`, wired in `opencode.json`) preferred over manual equivalents: `database-schema` before migrations/models, `database-query` for read-only SQL, `search-docs` before version-sensitive Laravel APIs, `get-absolute-url` before sharing a URL.
+- Skills in `.agents/skills/`: activate `laravel-best-practices` (backend), `testing-best-practices` (tests), `tailwindcss-development` (UI) when working in those areas.
+- Follow sibling-file conventions; don't add top-level directories or dependencies without approval; create docs files only when asked.
