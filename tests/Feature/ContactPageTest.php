@@ -14,7 +14,10 @@ class ContactPageTest extends TestCase
         $response = $this->get(route('kontak'));
 
         $response->assertOk();
-        $response->assertSee('Mari diskusikan kebutuhan Anda');
+        $response->assertSee('Bangun sesuatu yang');
+        $response->assertSee('Memulai Proyek');
+        $response->assertSee('Pertanyaan Umum');
+        $response->assertSee('Kirim Permintaan');
     }
 
     public function test_homepage_links_to_the_contact_page(): void

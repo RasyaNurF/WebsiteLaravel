@@ -57,8 +57,8 @@ if (chatForm && chatMessages) {
         const bubble = document.createElement('div');
         bubble.className =
             message.sender === 'guest'
-                ? 'max-w-[80%] bg-navy-800 px-4 py-2.5 text-sm leading-relaxed text-white'
-                : 'max-w-[80%] bg-white px-4 py-2.5 text-sm leading-relaxed ring-1 ring-neutral-200';
+                ? 'max-w-[80%] rounded-2xl rounded-br-sm bg-navy-800 px-4 py-2.5 text-sm leading-relaxed text-white'
+                : 'max-w-[80%] rounded-2xl rounded-bl-sm bg-white px-4 py-2.5 text-sm leading-relaxed ring-1 ring-neutral-200';
 
         if (message.sender !== 'guest') {
             const label = document.createElement('p');

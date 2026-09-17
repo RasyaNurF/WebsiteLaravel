@@ -70,7 +70,7 @@ $insights = [
     <section class="relative overflow-hidden bg-navy-950 text-white">
         <img src="{{ asset('img/hero.jpg') }}" alt="" aria-hidden="true" class="absolute inset-0 h-full w-full object-cover" loading="eager" fetchpriority="high">
         <div class="absolute inset-0 bg-navy-950/70" aria-hidden="true" data-no-reveal></div>
-        <div class="relative mx-auto max-w-7xl px-4 pb-20 pt-44 sm:px-6 sm:pb-28 sm:pt-52">
+        <div class="relative mx-auto max-w-7xl px-4 pb-20 pt-52 sm:px-6 sm:pb-28 sm:pt-64">
             <div class="max-w-2xl">
                 <p class="flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.28em] text-neutral-300"><span class="h-0.5 w-10 bg-brand-500" aria-hidden="true"></span>Teknologi &amp; Solusi Digital</p>
                 <h1 class="mt-6 text-4xl font-extrabold leading-[1.05] tracking-tight text-balance sm:text-6xl">
