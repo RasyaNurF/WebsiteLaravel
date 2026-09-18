@@ -1,0 +1,38 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Enums\PublishStatus;
+use App\Models\Article;
+use App\Models\Career;
+use App\Models\Portfolio;
+use App\Models\Service;
+use Illuminate\Http\Response;
+
+class SitemapController extends Controller
+{
+    public function __invoke(): Response
+    {
+        $urls = collect([
+            '/',
+            '/tentang',
+            '/layanan',
+            '/portfolio',
+            '/blog',
+            '/karier',
+            '/kontak',
+        ]);
+
+        $urls = $urls
+            ->merge(Service::query()->where('status', PublishStatus::Published->value)->pluck('slug')->map(fn ($slug) => "/layanan/{$slug}"))
+            ->merge(Portfolio::query()->where('status', PublishStatus::Published->value)->pluck('slug')->map(fn ($slug) => "/portfolio/{$slug}"))
+            ->merge(Article::query()->where('status', PublishStatus::Published->value)->pluck('slug')->map(fn ($slug) => "/blog/{$slug}"))
+            ->merge(Career::query()->where('status', PublishStatus::Published->value)->pluck('slug')->map(fn ($slug) => "/karier/{$slug}"))
+            ->unique()
+            ->values();
+
+        $xml = view('sitemap', ['urls' => $urls])->render();
+
+        return response($xml, 200, ['Content-Type' => 'application/xml']);
+    }
+}

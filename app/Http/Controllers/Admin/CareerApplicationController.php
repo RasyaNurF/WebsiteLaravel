@@ -1,0 +1,62 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\CareerApplicationRequest;
+use App\Models\CareerApplication;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
+
+class CareerApplicationController extends Controller
+{
+    public function index(Request $request): View
+    {
+        $applications = CareerApplication::query()
+            ->search($request->string('q')->toString())
+            ->withStatus($request->string('status')->toString())
+            ->with('career')
+            ->latest()
+            ->paginate(15)
+            ->withQueryString();
+
+        return view('admin.career-applications.index', [
+            'breadcrumbs' => [
+                ['label' => 'Dashboard', 'url' => route('admin.dashboard')],
+                ['label' => 'Lamaran Masuk'],
+            ],
+            'searchPlaceholder' => 'Cari nama atau email pelamar…',
+            'searchAction' => route('admin.career-applications.index'),
+            'applications' => $applications,
+            'statuses' => CareerApplication::STATUSES,
+        ]);
+    }
+
+    public function show(CareerApplication $careerApplication): View
+    {
+        return view('admin.career-applications.show', [
+            'breadcrumbs' => [
+                ['label' => 'Dashboard', 'url' => route('admin.dashboard')],
+                ['label' => 'Lamaran Masuk', 'url' => route('admin.career-applications.index')],
+                ['label' => $careerApplication->name],
+            ],
+            'application' => $careerApplication->load('career'),
+            'statuses' => CareerApplication::STATUSES,
+        ]);
+    }
+
+    public function update(CareerApplicationRequest $request, CareerApplication $careerApplication): RedirectResponse
+    {
+        $careerApplication->update($request->validated());
+
+        return redirect()->route('admin.career-applications.show', $careerApplication)->with('success', 'Status lamaran berhasil diperbarui.');
+    }
+
+    public function destroy(CareerApplication $careerApplication): RedirectResponse
+    {
+        $careerApplication->delete();
+
+        return redirect()->route('admin.career-applications.index')->with('success', 'Lamaran berhasil dihapus.');
+    }
+}

@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\MessageStatus;
 use App\Models\ChatMessage;
+use App\Models\ChatParticipant;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -36,6 +38,7 @@ class ChatController extends Controller
 
         $token = $this->guestToken($request);
         $name = $validated['name'] ?? $request->session()->get('chat_name');
+        $email = $validated['email'] ?? $request->session()->get('chat_email');
 
         if (filled($validated['name'] ?? null)) {
             $request->session()->put('chat_name', $validated['name']);
@@ -45,20 +48,36 @@ class ChatController extends Controller
             $request->session()->put('chat_email', $validated['email']);
         }
 
+        $participant = ChatParticipant::query()->firstOrNew(['guest_token' => $token]);
+        $participant->fill([
+            'name' => $name,
+            'email' => $email,
+            'subject' => $participant->subject ?? Str::limit($validated['body'], 120, ''),
+            'status' => $participant->exists ? $participant->status : MessageStatus::Unread->value,
+            'last_message_at' => now(),
+        ])->save();
+
+        if ($participant->messages()->where('sender', 'admin')->exists()) {
+            $participant->update(['status' => MessageStatus::Replied->value]);
+        }
+
         $guestMessage = ChatMessage::create([
+            'chat_participant_id' => $participant->id,
             'guest_token' => $token,
             'sender' => 'guest',
             'name' => $name,
-            'email' => $validated['email'] ?? $request->session()->get('chat_email'),
+            'email' => $email,
             'body' => $validated['body'],
         ]);
 
         $autoReply = ChatMessage::create([
+            'chat_participant_id' => $participant->id,
             'guest_token' => $token,
             'sender' => 'admin',
             'name' => 'Admin Nusakode',
             'body' => "Terima kasih {$name}! Pesan Anda sudah kami terima dan akan ditindaklanjuti maksimal 1x24 jam kerja. Silakan lanjutkan chat bila ada tambahan.",
             'is_auto' => true,
+            'is_read' => true,
         ]);
 
         return response()->json([

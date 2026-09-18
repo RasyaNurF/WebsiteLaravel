@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Enums\AdminRole;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -26,7 +27,31 @@ class RegisterTest extends TestCase
 
         $this->assertAuthenticated();
         $response->assertRedirect(route('dashboard'));
-        $this->assertDatabaseHas('users', ['email' => 'sinta@example.com']);
+        $this->assertDatabaseHas('users', ['email' => 'sinta@example.com', 'role' => AdminRole::User->value]);
+    }
+
+    public function test_registered_user_cannot_access_admin_panel(): void
+    {
+        $this->post(route('register'), [
+            'name' => 'Sinta Dewi',
+            'email' => 'sinta@example.com',
+            'password' => 'rahasia-aman-123',
+            'password_confirmation' => 'rahasia-aman-123',
+        ]);
+
+        $this->get(route('admin.dashboard'))->assertForbidden();
+    }
+
+    public function test_registered_user_is_redirected_away_from_admin_dashboard(): void
+    {
+        $this->post(route('register'), [
+            'name' => 'Sinta Dewi',
+            'email' => 'sinta@example.com',
+            'password' => 'rahasia-aman-123',
+            'password_confirmation' => 'rahasia-aman-123',
+        ]);
+
+        $this->get(route('dashboard'))->assertRedirect(route('home'));
     }
 
     public function test_registration_rejects_mismatched_password_confirmation(): void

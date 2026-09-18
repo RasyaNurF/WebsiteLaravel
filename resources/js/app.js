@@ -1,5 +1,7 @@
 // Drawer navigasi seluler, garis bawah header, dan animasi reveal saat menggulir.
 
+import './admin';
+
 const drawer = document.querySelector('[data-drawer]');
 const toggle = document.querySelector('[data-toggle]');
 
@@ -150,9 +152,43 @@ document.querySelectorAll('[data-pw-toggle]').forEach((button) => {
     });
 });
 
+// --- Banner promo (dapat ditutup; padding konten menyesuaikan) ---
+document.querySelector('[data-promo-close]')?.addEventListener('click', () => {
+    document.querySelector('[data-promo]')?.remove();
+    document.getElementById('main')?.classList.replace('pt-[112px]', 'pt-[72px]');
+    const hero = document.getElementById('beranda-hero');
+    hero?.classList.replace('pt-60', 'pt-52');
+    hero?.classList.replace('sm:pt-72', 'sm:pt-64');
+});
+
+// --- Tab solusi interaktif (Beranda) ---
+const solusiTabs = document.querySelectorAll('[data-solusi-tab]');
+const solusiPanels = document.querySelectorAll('[data-solusi-panel]');
+const solusiTabOn = ['bg-navy-950', 'text-white'];
+const solusiTabOff = ['text-neutral-500', 'ring-1', 'ring-neutral-200'];
+
+if (solusiTabs.length > 0) {
+    solusiTabs.forEach((tab) => {
+        tab.addEventListener('click', () => {
+            const index = tab.getAttribute('data-solusi-tab');
+
+            solusiTabs.forEach((other) => {
+                const active = other === tab;
+                other.setAttribute('aria-selected', String(active));
+                solusiTabOn.forEach((cls) => other.classList.toggle(cls, active));
+                solusiTabOff.forEach((cls) => other.classList.toggle(cls, !active));
+            });
+
+            solusiPanels.forEach((panel) => {
+                panel.hidden = panel.getAttribute('data-solusi-panel') !== index;
+            });
+        });
+    });
+}
+
 // Reveal on scroll: blok section muncul halus, item daftar menyusul berurutan.
 const listItems = document.querySelectorAll(
-    '#layanan [data-service-item], #proses ol > li, #insight .divide-y > a'
+    '#solusi .solusi-tabs > button, #portofolio article, #insight .divide-y > a'
 );
 
 listItems.forEach((el) => {
@@ -161,7 +197,7 @@ listItems.forEach((el) => {
 });
 
 const revealTargets = document.querySelectorAll(
-    'main section > div:not([data-no-reveal]), #layanan [data-service-item], #solusi .divide-y > div'
+    'main section > div:not([data-no-reveal])'
 );
 
 if ('IntersectionObserver' in window && revealTargets.length > 0) {
